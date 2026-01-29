@@ -1,0 +1,1748 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexGen Academy - Future of Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+    
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Rajdhani:wght@300;400;500;600;700&display=swap');
+        
+        :root {
+            --neon-blue: #00f5ff;
+            --neon-purple: #bf00ff;
+            --neon-pink: #ff00ea;
+            --neon-green: #00ff88;
+            --neon-gold: #ffd700;
+            --dark-bg: #0a0a0f;
+        }
+        
+        * { scroll-behavior: smooth; }
+        
+        body {
+            font-family: 'Rajdhani', sans-serif;
+            background: var(--dark-bg);
+            color: #fff;
+            overflow-x: hidden;
+        }
+        
+        .font-orbitron { font-family: 'Orbitron', sans-serif; }
+        
+        .cyber-grid {
+            background-image: 
+                linear-gradient(rgba(0,245,255,0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0,245,255,0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: gridMove 20s linear infinite;
+        }
+        
+        @keyframes gridMove {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+        
+        .glow-blue { box-shadow: 0 0 20px rgba(0,245,255,0.3), 0 0 40px rgba(0,245,255,0.1); }
+        .glow-purple { box-shadow: 0 0 20px rgba(191,0,255,0.3), 0 0 40px rgba(191,0,255,0.1); }
+        .glow-green { box-shadow: 0 0 20px rgba(0,255,136,0.3), 0 0 40px rgba(0,255,136,0.1); }
+        .glow-gold { box-shadow: 0 0 20px rgba(255,215,0,0.3), 0 0 40px rgba(255,215,0,0.1); }
+        
+        .text-glow-blue { text-shadow: 0 0 10px rgba(0,245,255,0.8), 0 0 20px rgba(0,245,255,0.4); }
+        
+        .glass {
+            background: rgba(255,255,255,0.05);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .glass-dark {
+            background: rgba(10,10,15,0.95);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        .neon-border {
+            position: relative;
+            overflow: hidden;
+        }
+        .neon-border::before {
+            content: '';
+            position: absolute;
+            top: -2px; left: -2px; right: -2px; bottom: -2px;
+            background: linear-gradient(45deg, var(--neon-blue), var(--neon-purple), var(--neon-pink), var(--neon-green));
+            background-size: 400% 400%;
+            z-index: -1;
+            border-radius: inherit;
+            animation: borderGlow 3s ease infinite;
+        }
+        
+        @keyframes borderGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+        
+        .float { animation: float 6s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        .pulse-neon { animation: pulseNeon 2s ease-in-out infinite; }
+        @keyframes pulseNeon {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        .cyber-card {
+            background: linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%);
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .cyber-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--neon-blue);
+            box-shadow: 0 20px 40px rgba(0,245,255,0.2);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hexagon { clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); }
+        
+        .blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.4;
+            animation: blobFloat 8s ease-in-out infinite;
+        }
+        @keyframes blobFloat {
+            0%, 100% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -30px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+        }
+
+        .btn-cyber {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s;
+        }
+        .btn-cyber::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+            transition: left 0.5s;
+        }
+        .btn-cyber:hover::before { left: 100%; }
+
+        .input-cyber:focus {
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0,245,255,0.3);
+            outline: none;
+        }
+
+        .badge-free {
+            background: linear-gradient(135deg, #00ff88, #00cc6a);
+            color: #000;
+            font-weight: bold;
+            animation: pulseFree 2s infinite;
+        }
+        @keyframes pulseFree {
+            0%, 100% { box-shadow: 0 0 5px #00ff88; }
+            50% { box-shadow: 0 0 20px #00ff88, 0 0 30px #00ff88; }
+        }
+
+        .badge-premium {
+            background: linear-gradient(135deg, #ffd700, #ff8c00);
+            color: #000;
+            font-weight: bold;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--dark-bg); }
+        ::-webkit-scrollbar-thumb { 
+            background: linear-gradient(var(--neon-blue), var(--neon-purple)); 
+            border-radius: 4px;
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            padding: 15px 25px;
+            border-radius: 10px;
+            z-index: 1000;
+            transform: translateX(400px);
+            transition: transform 0.5s ease;
+        }
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .avatar-ring {
+            background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple), var(--neon-pink));
+            padding: 3px;
+            border-radius: 50%;
+        }
+
+        .level-bar {
+            background: linear-gradient(90deg, #00ff88, #00f5ff, #bf00ff);
+            background-size: 200% 100%;
+            animation: levelGlow 2s linear infinite;
+        }
+        @keyframes levelGlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 200% 50%; }
+        }
+
+        .online-indicator {
+            animation: onlinePulse 2s infinite;
+        }
+        @keyframes onlinePulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(0,255,136,0.7); }
+            50% { box-shadow: 0 0 0 8px rgba(0,255,136,0); }
+        }
+
+        .tab-btn.active {
+            background: linear-gradient(135deg, rgba(0,245,255,0.2), rgba(191,0,255,0.2));
+            border-color: var(--neon-blue);
+        }
+
+        .file-drop-zone {
+            border: 2px dashed rgba(0,245,255,0.3);
+            transition: all 0.3s;
+        }
+        .file-drop-zone:hover, .file-drop-zone.dragover {
+            border-color: var(--neon-blue);
+            background: rgba(0,245,255,0.1);
+        }
+
+        .file-item {
+            transition: all 0.3s;
+        }
+        .file-item:hover {
+            background: rgba(0,245,255,0.1);
+            transform: translateX(5px);
+        }
+
+        .upload-progress {
+            background: linear-gradient(90deg, var(--neon-blue), var(--neon-purple));
+            transition: width 0.3s;
+        }
+
+        .profile-picture-upload {
+            position: relative;
+            cursor: pointer;
+        }
+        .profile-picture-upload:hover .upload-overlay {
+            opacity: 1;
+        }
+        .upload-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .storage-bar {
+            background: linear-gradient(90deg, #00ff88, #00f5ff, #bf00ff, #ff00ea);
+            background-size: 300% 100%;
+            animation: storageGlow 3s linear infinite;
+        }
+        @keyframes storageGlow {
+            0% { background-position: 0% 50%; }
+            100% { background-position: 300% 50%; }
+        }
+
+        .loading-spinner {
+            border: 3px solid rgba(255,255,255,0.1);
+            border-top-color: var(--neon-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="cyber-grid">
+    <!-- Floating Blobs -->
+    <div class="blob w-96 h-96 bg-cyan-500 top-20 -left-48 fixed"></div>
+    <div class="blob w-80 h-80 bg-purple-600 top-1/2 -right-40 fixed" style="animation-delay: -2s;"></div>
+    <div class="blob w-64 h-64 bg-pink-500 bottom-20 left-1/4 fixed" style="animation-delay: -4s;"></div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast glass-dark border border-green-500/50">
+        <div class="flex items-center gap-3">
+            <i class="fas fa-check-circle text-green-400 text-xl"></i>
+            <span id="toastMessage" class="text-white"></span>
+        </div>
+    </div>
+
+    <!-- Loading Overlay -->
+    <div id="loadingOverlay" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden items-center justify-center">
+        <div class="text-center">
+            <div class="loading-spinner w-16 h-16 mx-auto mb-4"></div>
+            <p id="loadingText" class="text-cyan-400 font-orbitron">Loading...</p>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav class="glass-dark fixed w-full z-50 border-b border-cyan-500/20">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between items-center py-4">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 hexagon bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center">
+                        <i class="fas fa-atom text-white text-lg"></i>
+                    </div>
+                    <span class="text-2xl font-orbitron font-bold gradient-text">NEXGEN</span>
+                </div>
+                <div class="hidden md:flex space-x-8">
+                    <a href="#home" class="text-gray-300 hover:text-cyan-400 font-medium transition flex items-center gap-2">
+                        <i class="fas fa-home text-xs"></i>Home
+                    </a>
+                    <a href="#free-courses" class="text-gray-300 hover:text-cyan-400 font-medium transition flex items-center gap-2">
+                        <i class="fas fa-gift text-xs text-green-400"></i>Free Courses
+                    </a>
+                    <a href="#premium" class="text-gray-300 hover:text-cyan-400 font-medium transition flex items-center gap-2">
+                        <i class="fas fa-crown text-xs text-yellow-400"></i>Premium
+                    </a>
+                    <a href="#tools" class="text-gray-300 hover:text-cyan-400 font-medium transition flex items-center gap-2">
+                        <i class="fas fa-tools text-xs"></i>Tools
+                    </a>
+                </div>
+                
+                <!-- Auth Buttons (Not Logged In) -->
+                <div id="authButtons" class="hidden md:flex items-center space-x-4">
+                    <button onclick="openLoginModal()" class="text-cyan-400 font-medium hover:text-cyan-300 transition">
+                        <i class="fas fa-user mr-2"></i>Login
+                    </button>
+                    <button onclick="openRegisterModal()" class="btn-cyber bg-gradient-to-r from-cyan-500 to-purple-600 text-white px-6 py-2 rounded-full font-semibold hover:shadow-lg hover:shadow-cyan-500/30 transition">
+                        <i class="fas fa-rocket mr-2"></i>Register FREE
+                    </button>
+                </div>
+
+                <!-- User Profile (Logged In) -->
+                <div id="userProfileNav" class="hidden md:flex items-center space-x-4" style="display: none;">
+                    <div class="flex items-center gap-3 cursor-pointer" onclick="openProfileModal()">
+                        <div class="relative">
+                            <div class="avatar-ring">
+                                <img id="navAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=default" alt="Avatar" class="w-10 h-10 rounded-full bg-gray-800 object-cover">
+                            </div>
+                            <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-gray-900 online-indicator"></div>
+                        </div>
+                        <div>
+                            <p id="navUserName" class="text-sm font-bold text-white">User</p>
+                            <p class="text-xs text-cyan-400">Level <span id="navUserLevel">1</span></p>
+                        </div>
+                    </div>
+                    <button onclick="logout()" class="text-red-400 hover:text-red-300 transition p-2">
+                        <i class="fas fa-sign-out-alt"></i>
+                    </button>
+                </div>
+
+                <button id="mobileMenuBtn" class="md:hidden text-cyan-400">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="home" class="min-h-screen flex items-center pt-20 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 py-20 relative z-10">
+            <div class="grid md:grid-cols-2 gap-12 items-center">
+                <div>
+                    <div class="inline-flex items-center gap-2 glass px-4 py-2 rounded-full mb-6">
+                        <span class="w-2 h-2 bg-green-400 rounded-full pulse-neon"></span>
+                        <span class="text-gray-300 text-sm font-medium">FREE COURSES + CLOUD STORAGE</span>
+                    </div>
+                    <h1 class="text-5xl md:text-7xl font-orbitron font-bold mb-6 leading-tight">
+                        <span class="text-white">LEARN &</span><br>
+                        <span class="gradient-text text-glow-blue">STORE FILES</span>
+                    </h1>
+                    <p class="text-xl text-gray-400 mb-8 leading-relaxed">
+                        Learn <span class="text-green-400">Mathematics</span>, <span class="text-purple-400">Programming</span>, and <span class="text-pink-400">Technology</span>. 
+                        <strong class="text-white">Upload & store your study files in the cloud!</strong>
+                    </p>
+                    
+                    <div class="glass rounded-xl p-4 mb-8">
+                        <div class="grid grid-cols-3 gap-4 text-center">
+                            <div class="border-r border-gray-700">
+                                <span class="badge-free px-2 py-0.5 rounded-full text-xs">FREE</span>
+                                <p class="text-2xl font-orbitron font-bold text-green-400 mt-2">15+</p>
+                                <p class="text-gray-400 text-sm">Courses</p>
+                            </div>
+                            <div class="border-r border-gray-700">
+                                <i class="fas fa-cloud text-cyan-400 text-xl"></i>
+                                <p class="text-2xl font-orbitron font-bold text-cyan-400 mt-2">100MB</p>
+                                <p class="text-gray-400 text-sm">Free Storage</p>
+                            </div>
+                            <div>
+                                <i class="fas fa-image text-purple-400 text-xl"></i>
+                                <p class="text-2xl font-orbitron font-bold text-purple-400 mt-2">∞</p>
+                                <p class="text-gray-400 text-sm">Profile Pics</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-wrap gap-4">
+                        <button onclick="openRegisterModal()" class="btn-cyber bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-4 rounded-lg font-bold text-lg hover:shadow-lg hover:shadow-green-500/30 transition flex items-center gap-2">
+                            <i class="fas fa-gift"></i>Start FREE Now
+                        </button>
+                        <a href="#premium" class="btn-cyber border-2 border-yellow-500 text-yellow-400 px-8 py-4 rounded-lg font-bold text-lg hover:bg-yellow-500/10 transition flex items-center gap-2">
+                            <i class="fas fa-crown"></i>Go Premium
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="hidden md:flex justify-center">
+                    <div class="relative">
+                        <div class="w-80 h-80 hexagon bg-gradient-to-br from-cyan-500/20 to-purple-600/20 flex items-center justify-center float glow-blue">
+                            <div class="w-64 h-64 hexagon bg-gradient-to-br from-cyan-500/30 to-purple-600/30 flex items-center justify-center">
+                                <div class="text-center">
+                                    <i class="fas fa-cloud-upload-alt text-6xl text-cyan-400 mb-4"></i>
+                                    <div class="font-orbitron text-xl font-bold text-white">CLOUD STORAGE</div>
+                                    <div class="text-gray-400">Upload Your Files</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FREE COURSES Section -->
+    <section id="free-courses" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center gap-2 badge-free px-4 py-2 rounded-full mb-4">
+                    <i class="fas fa-gift"></i>
+                    <span class="text-sm font-medium">100% FREE - NO PAYMENT REQUIRED</span>
+                </div>
+                <h2 class="text-4xl md:text-5xl font-orbitron font-bold mb-4">
+                    <span class="text-white">FREE</span> <span class="text-green-400">COURSES</span>
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8 mb-12">
+                <!-- Free Course Cards -->
+                <div class="cyber-card rounded-2xl overflow-hidden group">
+                    <div class="h-48 bg-gradient-to-br from-green-600 to-emerald-700 flex items-center justify-center relative">
+                        <i class="fas fa-calculator text-6xl text-white/80 group-hover:scale-110 transition-transform"></i>
+                        <div class="absolute top-4 left-4">
+                            <span class="badge-free px-3 py-1 rounded-full text-xs"><i class="fas fa-gift mr-1"></i>FREE</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-orbitron font-bold text-white mb-2">Basic Mathematics</h3>
+                        <p class="text-gray-400 text-sm mb-4">Learn algebra, arithmetic, and basic geometry fundamentals.</p>
+                        <button onclick="checkLoginAndEnroll('Basic Mathematics')" class="w-full btn-cyber bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-bold transition">
+                            <i class="fas fa-play mr-2"></i>Start Free
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cyber-card rounded-2xl overflow-hidden group">
+                    <div class="h-48 bg-gradient-to-br from-cyan-600 to-blue-700 flex items-center justify-center relative">
+                        <i class="fab fa-python text-6xl text-white/80 group-hover:scale-110 transition-transform"></i>
+                        <div class="absolute top-4 left-4">
+                            <span class="badge-free px-3 py-1 rounded-full text-xs"><i class="fas fa-gift mr-1"></i>FREE</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-orbitron font-bold text-white mb-2">Python Basics</h3>
+                        <p class="text-gray-400 text-sm mb-4">Introduction to Python programming for absolute beginners.</p>
+                        <button onclick="checkLoginAndEnroll('Python Basics')" class="w-full btn-cyber bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-bold transition">
+                            <i class="fas fa-play mr-2"></i>Start Free
+                        </button>
+                    </div>
+                </div>
+
+                <div class="cyber-card rounded-2xl overflow-hidden group">
+                    <div class="h-48 bg-gradient-to-br from-purple-600 to-pink-700 flex items-center justify-center relative">
+                        <i class="fab fa-html5 text-6xl text-white/80 group-hover:scale-110 transition-transform"></i>
+                        <div class="absolute top-4 left-4">
+                            <span class="badge-free px-3 py-1 rounded-full text-xs"><i class="fas fa-gift mr-1"></i>FREE</span>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-orbitron font-bold text-white mb-2">HTML & CSS Basics</h3>
+                        <p class="text-gray-400 text-sm mb-4">Build your first websites with HTML and CSS.</p>
+                        <button onclick="checkLoginAndEnroll('HTML & CSS Basics')" class="w-full btn-cyber bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-bold transition">
+                            <i class="fas fa-play mr-2"></i>Start Free
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- PREMIUM Section -->
+    <section id="premium" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <div class="inline-flex items-center gap-2 badge-premium px-4 py-2 rounded-full mb-4">
+                    <i class="fas fa-crown"></i>
+                    <span class="text-sm font-medium">UNLOCK ADVANCED FEATURES</span>
+                </div>
+                <h2 class="text-4xl md:text-5xl font-orbitron font-bold mb-4">
+                    <span class="text-white">PREMIUM</span> <span class="text-yellow-400">PLANS</span>
+                </h2>
+            </div>
+
+            <!-- Pricing Plans -->
+            <div class="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+                <div class="cyber-card rounded-2xl p-8 glow-green">
+                    <div class="text-center mb-8">
+                        <div class="w-16 h-16 hexagon bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-gift text-2xl text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-orbitron font-bold text-green-400">FREE</h3>
+                    </div>
+                    <div class="text-center mb-8">
+                        <span class="text-5xl font-orbitron font-bold text-green-400">$0</span>
+                        <span class="text-gray-500">/forever</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-green-400 mr-3 w-5"></i>15+ Free Courses</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-green-400 mr-3 w-5"></i>100MB Cloud Storage</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-green-400 mr-3 w-5"></i>Profile Customization</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-green-400 mr-3 w-5"></i>File Upload & Download</li>
+                        <li class="flex items-center text-gray-500"><i class="fas fa-times text-gray-600 mr-3 w-5"></i>Premium Courses</li>
+                    </ul>
+                    <button onclick="openRegisterModal()" class="w-full btn-cyber bg-gradient-to-r from-green-500 to-emerald-600 text-white py-3 rounded-lg font-bold transition">
+                        GET STARTED FREE
+                    </button>
+                </div>
+
+                <div class="relative transform md:-translate-y-4">
+                    <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 z-10">
+                        <span class="bg-gradient-to-r from-yellow-500 to-orange-500 text-black px-4 py-1 rounded-full text-sm font-bold">BEST VALUE</span>
+                    </div>
+                    <div class="cyber-card rounded-2xl p-8 neon-border glow-gold">
+                        <div class="bg-gray-900 rounded-xl p-8">
+                            <div class="text-center mb-8">
+                                <div class="w-16 h-16 hexagon bg-gradient-to-br from-yellow-500 to-orange-600 flex items-center justify-center mx-auto mb-4">
+                                    <i class="fas fa-crown text-2xl text-white"></i>
+                                </div>
+                                <h3 class="text-xl font-orbitron font-bold text-yellow-400">PRO</h3>
+                            </div>
+                            <div class="text-center mb-8">
+                                <span class="text-5xl font-orbitron font-bold text-yellow-400">$29</span>
+                                <span class="text-gray-500">/month</span>
+                            </div>
+                            <ul class="space-y-4 mb-8">
+                                <li class="flex items-center text-gray-300"><i class="fas fa-check text-yellow-400 mr-3 w-5"></i>Everything in Free</li>
+                                <li class="flex items-center text-gray-300"><i class="fas fa-check text-yellow-400 mr-3 w-5"></i>50+ Premium Courses</li>
+                                <li class="flex items-center text-gray-300"><i class="fas fa-check text-yellow-400 mr-3 w-5"></i>5GB Cloud Storage</li>
+                                <li class="flex items-center text-gray-300"><i class="fas fa-check text-yellow-400 mr-3 w-5"></i>Certificates</li>
+                                <li class="flex items-center text-gray-300"><i class="fas fa-check text-yellow-400 mr-3 w-5"></i>Priority Support</li>
+                            </ul>
+                            <button onclick="openPaymentModal('Pro Plan', 29)" class="w-full btn-cyber bg-gradient-to-r from-yellow-500 to-orange-600 text-black py-3 rounded-lg font-bold transition">
+                                SUBSCRIBE NOW
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="cyber-card rounded-2xl p-8 glow-purple">
+                    <div class="text-center mb-8">
+                        <div class="w-16 h-16 hexagon bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center mx-auto mb-4">
+                            <i class="fas fa-gem text-2xl text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-orbitron font-bold text-purple-400">ENTERPRISE</h3>
+                    </div>
+                    <div class="text-center mb-8">
+                        <span class="text-5xl font-orbitron font-bold text-purple-400">$99</span>
+                        <span class="text-gray-500">/month</span>
+                    </div>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-purple-400 mr-3 w-5"></i>Everything in Pro</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-purple-400 mr-3 w-5"></i>Unlimited Storage</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-purple-400 mr-3 w-5"></i>1-on-1 Mentorship</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-purple-400 mr-3 w-5"></i>Team Management</li>
+                        <li class="flex items-center text-gray-300"><i class="fas fa-check text-purple-400 mr-3 w-5"></i>API Access</li>
+                    </ul>
+                    <button onclick="openPaymentModal('Enterprise Plan', 99)" class="w-full btn-cyber border-2 border-purple-500 text-purple-400 py-3 rounded-lg font-bold hover:bg-purple-500/10 transition">
+                        CONTACT US
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tools Section -->
+    <section id="tools" class="py-20 relative">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl md:text-5xl font-orbitron font-bold mb-4">
+                    <span class="text-white">LEARNING</span> <span class="gradient-text">TOOLS</span>
+                </h2>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <!-- Calculator -->
+                <div class="cyber-card rounded-2xl p-8">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 hexagon bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center">
+                            <i class="fas fa-calculator text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-orbitron font-bold text-cyan-400">MATH CALCULATOR</h3>
+                            <span class="badge-free px-2 py-0.5 rounded text-xs">FREE</span>
+                        </div>
+                    </div>
+                    <div class="glass rounded-xl p-4 mb-4">
+                        <input type="text" id="calcDisplay" readonly value="0" class="w-full text-right text-3xl font-orbitron bg-transparent text-cyan-400 outline-none">
+                    </div>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button onclick="clearCalc()" class="bg-red-500/20 text-red-400 border border-red-500/30 p-4 rounded-lg font-bold hover:bg-red-500/30 transition">C</button>
+                        <button onclick="appendCalc('(')" class="glass p-4 rounded-lg font-bold text-gray-300 hover:bg-white/10 transition">(</button>
+                        <button onclick="appendCalc(')')" class="glass p-4 rounded-lg font-bold text-gray-300 hover:bg-white/10 transition">)</button>
+                        <button onclick="appendCalc('/')" class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 p-4 rounded-lg font-bold hover:bg-cyan-500/30 transition">/</button>
+                        <button onclick="appendCalc('7')" class="glass p-4 rounded-lg font-bold text-white hover:bg-white/10 transition">7</button>
+                        <button onclick="appendCalc('8')" class="glass p-4 rounded-lg font-bold text-white hover:bg-white/10 transition">8</button>
+                        <button onclick="appendCalc('9')" class="glass p-4 rounded-lg font-bold text-white hover:bg-white/10 transition">9</button>
+                        <button onclick="appendCalc('*')" class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 p-4 rounded-lg font-bold hover:bg-cyan-500/30 transition">×</button>
+                        <button onclick="appendCalc('4')" class="glass p-4 rounded-lg font-bold text-white hover:bg-white/10 transition">4</button>
+                        <button onclick="appendCalc('5')" class="glass p-4 rounded-lg font-bold text-white hover:bg-white/10 transition">5</button>
+                        <button onclick="appendCalc('6')" class="glass p-4 rounded-lg font-bold text-white hover:bg-white/10 transition">6</button>
+                        <button onclick="appendCalc('-')" class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 p-4 rounded-lg font-bold hover:bg-cyan-500/30 transition">-</button>
+                        <button onclick="appendCalc('1')" class="glass p-4 rounded-lg font-bold text-white hover:bg-white/10 transition">1</button>
+                        <button onclick="appendCalc('2')" class="glass p-4 rounded-lg font-bold text-white hover:bg-white/10 transition">2</button>
+                        <button onclick="appendCalc('3')" class="glass p-4 rounded-lg font-bold text-white hover:bg-white/10 transition">3</button>
+                        <button onclick="appendCalc('+')" class="bg-cyan-500/20 text-cyan-400 border border-cyan-500/30 p-4 rounded-lg font-bold hover:bg-cyan-500/30 transition">+</button>
+                        <button onclick="appendCalc('0')" class="glass p-4 rounded-lg font-bold text-white hover:bg-white/10 transition col-span-2">0</button>
+                        <button onclick="appendCalc('.')" class="glass p-4 rounded-lg font-bold text-white hover:bg-white/10 transition">.</button>
+                        <button onclick="calculate()" class="bg-green-500/20 text-green-400 border border-green-500/30 p-4 rounded-lg font-bold hover:bg-green-500/30 transition">=</button>
+                    </div>
+                </div>
+
+                <!-- Code Editor -->
+                <div class="cyber-card rounded-2xl p-8">
+                    <div class="flex items-center gap-4 mb-6">
+                        <div class="w-12 h-12 hexagon bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center">
+                            <i class="fas fa-code text-white"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-orbitron font-bold text-purple-400">CODE PLAYGROUND</h3>
+                            <span class="badge-free px-2 py-0.5 rounded text-xs">FREE</span>
+                        </div>
+                    </div>
+                    <div class="bg-gray-900 rounded-xl p-4 mb-4 border border-gray-800">
+                        <div class="flex items-center gap-2 mb-3 pb-3 border-b border-gray-800">
+                            <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                            <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                            <span class="ml-3 text-gray-500 text-sm font-mono">script.js</span>
+                        </div>
+                        <textarea id="codeEditor" class="w-full h-40 bg-transparent text-green-400 font-mono text-sm outline-none resize-none" placeholder="// Write JavaScript code here...">console.log("Hello, World!");</textarea>
+                    </div>
+                    <button onclick="runCode()" class="w-full btn-cyber bg-gradient-to-r from-purple-500 to-pink-600 text-white py-3 rounded-lg font-bold transition flex items-center justify-center gap-2">
+                        <i class="fas fa-play"></i>RUN CODE
+                    </button>
+                    <div class="mt-4 bg-gray-900 rounded-xl p-4 border border-gray-800">
+                        <p class="text-gray-500 text-sm mb-2 font-mono">> Output:</p>
+                        <pre id="codeOutput" class="text-green-400 font-mono text-sm min-h-[60px]"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="border-t border-gray-800 py-16">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <div class="flex items-center justify-center space-x-3 mb-4">
+                <div class="w-10 h-10 hexagon bg-gradient-to-br from-cyan-400 to-purple-600 flex items-center justify-center">
+                    <i class="fas fa-atom text-white text-lg"></i>
+                </div>
+                <span class="text-2xl font-orbitron font-bold gradient-text">NEXGEN</span>
+            </div>
+            <p class="text-gray-400 mb-4">Empowering students worldwide with free education and cloud storage.</p>
+            <p class="text-gray-500 text-sm">Admin: hekimapeter48@gmail.com</p>
+            <p class="text-gray-600 text-xs mt-4">&copy; 2025 NexGen Academy. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- REGISTER Modal -->
+    <div id="registerModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="cyber-card rounded-2xl max-w-md w-full max-h-[90vh] overflow-auto neon-border">
+            <div class="bg-gray-900 rounded-2xl p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h3 class="text-2xl font-orbitron font-bold gradient-text">REGISTER FREE</h3>
+                        <span class="badge-free px-2 py-0.5 rounded text-xs mt-1 inline-block">100MB FREE STORAGE</span>
+                    </div>
+                    <button onclick="closeRegisterModal()" class="text-gray-400 hover:text-white transition">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <form id="registerForm" onsubmit="processRegistration(event)">
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">First Name *</label>
+                                <input type="text" id="regFirstName" required placeholder="John" class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Last Name *</label>
+                                <input type="text" id="regLastName" required placeholder="Doe" class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Email Address *</label>
+                            <input type="email" id="regEmail" required placeholder="john@example.com" class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Phone Number *</label>
+                            <input type="tel" id="regPhone" required placeholder="+255 712 345 678" class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Password *</label>
+                            <input type="password" id="regPassword" required placeholder="••••••••" minlength="6" class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Learning Interest *</label>
+                            <select id="regInterest" required class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white">
+                                <option value="">Select interest</option>
+                                <option value="Mathematics">Mathematics</option>
+                                <option value="Programming">Programming</option>
+                                <option value="Data Science & AI">Data Science & AI</option>
+                                <option value="All Subjects">All of the above</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button type="submit" id="registerBtn" class="w-full mt-6 btn-cyber bg-gradient-to-r from-green-500 to-emerald-600 text-white py-4 rounded-lg font-bold transition flex items-center justify-center gap-2">
+                        <i class="fas fa-user-plus"></i>CREATE FREE ACCOUNT
+                    </button>
+                    <p class="mt-4 text-center text-sm text-gray-400">
+                        Already have an account? <button type="button" onclick="closeRegisterModal(); openLoginModal();" class="text-cyan-400 hover:underline">Login</button>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- LOGIN Modal -->
+    <div id="loginModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="cyber-card rounded-2xl max-w-md w-full neon-border">
+            <div class="bg-gray-900 rounded-2xl p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-orbitron font-bold gradient-text">WELCOME BACK</h3>
+                    <button onclick="closeLoginModal()" class="text-gray-400 hover:text-white transition">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <form id="loginForm" onsubmit="processLogin(event)">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Email Address</label>
+                            <input type="email" id="loginEmail" required placeholder="john@example.com" class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Password</label>
+                            <input type="password" id="loginPassword" required placeholder="••••••••" class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500">
+                        </div>
+                    </div>
+                    <button type="submit" id="loginBtn" class="w-full mt-6 btn-cyber bg-gradient-to-r from-cyan-500 to-purple-600 text-white py-4 rounded-lg font-bold transition flex items-center justify-center gap-2">
+                        <i class="fas fa-sign-in-alt"></i>LOGIN
+                    </button>
+                    <p class="mt-4 text-center text-sm text-gray-400">
+                        Don't have an account? <button type="button" onclick="closeLoginModal(); openRegisterModal();" class="text-green-400 hover:underline">Register FREE</button>
+                    </p>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROFILE Modal -->
+    <div id="profileModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 overflow-auto">
+        <div class="cyber-card rounded-2xl max-w-4xl w-full max-h-[95vh] overflow-auto neon-border my-4">
+            <div class="bg-gray-900 rounded-2xl p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-orbitron font-bold gradient-text">MY PROFILE</h3>
+                    <button onclick="closeProfileModal()" class="text-gray-400 hover:text-white transition">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Profile Header -->
+                <div class="glass rounded-xl p-6 mb-6">
+                    <div class="flex flex-col md:flex-row items-center gap-6">
+                        <!-- Profile Picture Upload -->
+                        <div class="profile-picture-upload" onclick="document.getElementById('profilePicInput').click()">
+                            <div class="avatar-ring">
+                                <img id="profileAvatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=default" alt="Avatar" class="w-32 h-32 rounded-full bg-gray-800 object-cover">
+                            </div>
+                            <div class="upload-overlay">
+                                <div class="text-center">
+                                    <i class="fas fa-camera text-white text-2xl mb-1"></i>
+                                    <p class="text-white text-xs">Change Photo</p>
+                                </div>
+                            </div>
+                            <input type="file" id="profilePicInput" accept="image/*" class="hidden" onchange="uploadProfilePicture(event)">
+                        </div>
+                        <div class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-gray-900 flex items-center justify-center online-indicator">
+                            <i class="fas fa-check text-white text-xs"></i>
+                        </div>
+                        <div class="text-center md:text-left flex-1">
+                            <h2 id="profileName" class="text-2xl font-orbitron font-bold text-white mb-1">Student Name</h2>
+                            <p id="profileEmail" class="text-cyan-400 mb-3">email@example.com</p>
+                            <div class="flex flex-wrap justify-center md:justify-start gap-2 mb-4">
+                                <span class="badge-free px-3 py-1 rounded-full text-xs"><i class="fas fa-star mr-1"></i>FREE MEMBER</span>
+                            </div>
+                            <!-- Storage Usage -->
+                            <div class="max-w-xs mx-auto md:mx-0">
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="text-gray-400">Storage Used</span>
+                                    <span class="text-cyan-400"><span id="storageUsed">0</span> / 100 MB</span>
+                                </div>
+                                <div class="h-3 bg-gray-800 rounded-full overflow-hidden">
+                                    <div id="storageBar" class="h-full storage-bar rounded-full" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Profile Tabs -->
+                <div class="flex gap-2 mb-6 overflow-x-auto pb-2">
+                    <button onclick="switchProfileTab('files')" class="tab-btn active px-4 py-2 rounded-lg border border-gray-700 text-white font-medium whitespace-nowrap transition" data-tab="files">
+                        <i class="fas fa-folder mr-2"></i>My Files
+                    </button>
+                    <button onclick="switchProfileTab('courses')" class="tab-btn px-4 py-2 rounded-lg border border-gray-700 text-gray-400 font-medium whitespace-nowrap transition" data-tab="courses">
+                        <i class="fas fa-book mr-2"></i>My Courses
+                    </button>
+                    <button onclick="switchProfileTab('settings')" class="tab-btn px-4 py-2 rounded-lg border border-gray-700 text-gray-400 font-medium whitespace-nowrap transition" data-tab="settings">
+                        <i class="fas fa-cog mr-2"></i>Settings
+                    </button>
+                </div>
+
+                <!-- Files Tab -->
+                <div id="tab-files" class="profile-tab">
+                    <!-- Upload Area -->
+                    <div id="fileDropZone" class="file-drop-zone rounded-xl p-8 mb-6 text-center cursor-pointer" onclick="document.getElementById('fileInput').click()">
+                        <input type="file" id="fileInput" multiple class="hidden" onchange="uploadFiles(event)">
+                        <i class="fas fa-cloud-upload-alt text-5xl text-cyan-400 mb-4"></i>
+                        <h4 class="font-orbitron font-bold text-white mb-2">UPLOAD FILES</h4>
+                        <p class="text-gray-400 text-sm">Drag & drop files here or click to browse</p>
+                        <p class="text-gray-500 text-xs mt-2">Supports: PDF, DOC, Images, Videos (Max 10MB each)</p>
+                    </div>
+
+                    <!-- Upload Progress -->
+                    <div id="uploadProgress" class="hidden mb-6">
+                        <div class="glass rounded-xl p-4">
+                            <div class="flex items-center gap-3 mb-2">
+                                <div class="loading-spinner w-6 h-6"></div>
+                                <span id="uploadFileName" class="text-white">Uploading...</span>
+                            </div>
+                            <div class="h-2 bg-gray-800 rounded-full overflow-hidden">
+                                <div id="uploadProgressBar" class="h-full upload-progress rounded-full" style="width: 0%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Files List -->
+                    <div class="glass rounded-xl p-4">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="font-orbitron font-bold text-white"><i class="fas fa-folder-open mr-2 text-yellow-400"></i>My Files</h4>
+                            <span id="fileCount" class="text-gray-400 text-sm">0 files</span>
+                        </div>
+                        <div id="filesList" class="space-y-2">
+                            <div class="text-center py-8 text-gray-500">
+                                <i class="fas fa-folder-open text-4xl mb-3"></i>
+                                <p>No files uploaded yet</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Courses Tab -->
+                <div id="tab-courses" class="profile-tab hidden">
+                    <div id="enrolledCourses" class="space-y-4">
+                        <div class="glass rounded-xl p-6 text-center">
+                            <i class="fas fa-book-open text-4xl text-gray-600 mb-4"></i>
+                            <p class="text-gray-400">You haven't enrolled in any courses yet.</p>
+                            <a href="#free-courses" onclick="closeProfileModal()" class="inline-block mt-4 text-green-400 hover:underline">
+                                <i class="fas fa-arrow-right mr-2"></i>Browse Free Courses
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Settings Tab -->
+                <div id="tab-settings" class="profile-tab hidden">
+                    <form id="settingsForm" onsubmit="saveSettings(event)" class="space-y-6">
+                        <div class="glass rounded-xl p-6">
+                            <h4 class="font-orbitron font-bold text-white mb-4"><i class="fas fa-user mr-2 text-cyan-400"></i>Personal Information</h4>
+                            <div class="grid md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm text-gray-400 mb-1">First Name</label>
+                                    <input type="text" id="settingsFirstName" class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-400 mb-1">Last Name</label>
+                                    <input type="text" id="settingsLastName" class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-400 mb-1">Phone</label>
+                                    <input type="tel" id="settingsPhone" class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white">
+                                </div>
+                                <div>
+                                    <label class="block text-sm text-gray-400 mb-1">Country</label>
+                                    <select id="settingsCountry" class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white">
+                                        <option value="Tanzania">Tanzania</option>
+                                        <option value="Kenya">Kenya</option>
+                                        <option value="Uganda">Uganda</option>
+                                        <option value="Nigeria">Nigeria</option>
+                                        <option value="Other">Other</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="glass rounded-xl p-6">
+                            <h4 class="font-orbitron font-bold text-white mb-4"><i class="fas fa-palette mr-2 text-purple-400"></i>Choose Avatar</h4>
+                            <div class="grid grid-cols-6 gap-3" id="avatarOptions"></div>
+                        </div>
+
+                        <button type="submit" class="w-full btn-cyber bg-gradient-to-r from-cyan-500 to-purple-600 text-white py-4 rounded-lg font-bold transition">
+                            <i class="fas fa-save mr-2"></i>SAVE CHANGES
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PAYMENT Modal -->
+    <div id="paymentModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="cyber-card rounded-2xl max-w-md w-full max-h-[90vh] overflow-auto neon-border">
+            <div class="bg-gray-900 rounded-2xl p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-2xl font-orbitron font-bold text-yellow-400">PAYMENT</h3>
+                    <button onclick="closePaymentModal()" class="text-gray-400 hover:text-white transition">
+                        <i class="fas fa-times text-xl"></i>
+                    </button>
+                </div>
+                
+                <div class="glass rounded-xl p-4 mb-6">
+                    <div class="flex justify-between items-center">
+                        <span id="paymentCourseName" class="text-gray-300">Plan</span>
+                        <span id="paymentAmount" class="text-2xl font-orbitron font-bold text-yellow-400">$0.00</span>
+                    </div>
+                </div>
+
+                <form id="paymentForm" onsubmit="processPayment(event)">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Full Name *</label>
+                            <input type="text" id="payName" required class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Email *</label>
+                            <input type="email" id="payEmail" required class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Phone *</label>
+                            <input type="tel" id="payPhone" required class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white">
+                        </div>
+                        <div>
+                            <label class="block text-sm text-gray-400 mb-1">Card Number *</label>
+                            <input type="text" id="cardNumber" required placeholder="1234 5678 9012 3456" maxlength="19" class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">Expiry *</label>
+                                <input type="text" id="cardExpiry" required placeholder="MM/YY" maxlength="5" class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white">
+                            </div>
+                            <div>
+                                <label class="block text-sm text-gray-400 mb-1">CVV *</label>
+                                <input type="password" id="cardCVV" required placeholder="•••" maxlength="4" class="input-cyber w-full px-4 py-3 bg-gray-800 border border-gray-700 rounded-lg text-white">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="submit" id="payButton" class="w-full mt-6 btn-cyber bg-gradient-to-r from-yellow-500 to-orange-600 text-black py-4 rounded-lg font-bold transition flex items-center justify-center gap-2">
+                        <i class="fas fa-lock"></i>PAY SECURELY
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="cyber-card rounded-2xl max-w-md w-full text-center neon-border">
+            <div class="bg-gray-900 rounded-2xl p-8">
+                <div class="w-24 h-24 hexagon bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center mx-auto mb-6">
+                    <i class="fas fa-check text-4xl text-white"></i>
+                </div>
+                <h3 id="successTitle" class="text-2xl font-orbitron font-bold text-green-400 mb-2">SUCCESS!</h3>
+                <p id="successMessage" class="text-gray-400 mb-6">Action completed successfully.</p>
+                <button onclick="closeSuccessModal()" class="btn-cyber bg-gradient-to-r from-green-500 to-emerald-600 text-white px-8 py-3 rounded-lg font-bold transition">
+                    CONTINUE
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // FIREBASE CONFIGURATION
+        // Replace with your own Firebase config
+        // ============================================
+        const firebaseConfig = {
+            apiKey: "AIzaSyDemo-xxxxxxxxxxxxxxxxxxxx",
+            authDomain: "nexgen-academy.firebaseapp.com",
+            projectId: "nexgen-academy",
+            storageBucket: "nexgen-academy.appspot.com",
+            messagingSenderId: "123456789",
+            appId: "1:123456789:web:abcdef123456"
+        };
+
+        // Initialize Firebase (demo mode - uses localStorage as fallback)
+        let db, storage, auth;
+        let firebaseEnabled = false;
+        
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            storage = firebase.storage();
+            auth = firebase.auth();
+            firebaseEnabled = true;
+            console.log("✅ Firebase initialized");
+        } catch (e) {
+            console.log("⚠️ Firebase not configured - using local storage");
+        }
+
+        // Admin Email
+        const ADMIN_EMAIL = "hekimapeter48@gmail.com";
+        const WEB3FORMS_KEY = "YOUR_ACCESS_KEY_HERE";
+
+        // Current User
+        let currentUser = JSON.parse(localStorage.getItem('nexgenUser')) || null;
+        let userFiles = JSON.parse(localStorage.getItem('nexgenUserFiles')) || [];
+
+        // Avatar seeds
+        const avatarSeeds = ['Felix', 'Aneka', 'Shadow', 'Pixel', 'Storm', 'Luna', 'Max', 'Zoe', 'Kai', 'Nova', 'Blaze', 'Crystal'];
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            if (currentUser) {
+                updateUIForLoggedInUser();
+            }
+            generateAvatarOptions();
+            setupDragAndDrop();
+        });
+
+        // Toast
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            
+            toast.classList.remove('border-green-500/50', 'border-red-500/50');
+            const icon = toast.querySelector('i');
+            
+            if (type === 'success') {
+                toast.classList.add('border-green-500/50');
+                icon.className = 'fas fa-check-circle text-green-400 text-xl';
+            } else if (type === 'error') {
+                toast.classList.add('border-red-500/50');
+                icon.className = 'fas fa-exclamation-circle text-red-400 text-xl';
+            }
+            
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 4000);
+        }
+
+        // Loading
+        function showLoading(text = 'Loading...') {
+            document.getElementById('loadingText').textContent = text;
+            document.getElementById('loadingOverlay').classList.remove('hidden');
+            document.getElementById('loadingOverlay').classList.add('flex');
+        }
+
+        function hideLoading() {
+            document.getElementById('loadingOverlay').classList.add('hidden');
+            document.getElementById('loadingOverlay').classList.remove('flex');
+        }
+
+        // Send Notification
+        async function sendNotification(type, data) {
+            const timestamp = new Date().toLocaleString();
+            let subject, message;
+            
+            if (type === 'registration') {
+                subject = `🆕 NEW REGISTRATION - NexGen Academy`;
+                message = `New student: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone}\nInterest: ${data.interest}\nTime: ${timestamp}`;
+            } else if (type === 'login') {
+                subject = `🔓 USER LOGIN - NexGen Academy`;
+                message = `User logged in: ${data.name}\nEmail: ${data.email}\nTime: ${timestamp}`;
+            } else if (type === 'payment') {
+                subject = `💰 PAYMENT $${data.amount} - NexGen Academy`;
+                message = `Payment: ${data.name}\nEmail: ${data.email}\nPlan: ${data.course}\nAmount: $${data.amount}\nTime: ${timestamp}`;
+            } else if (type === 'file_upload') {
+                subject = `📁 FILE UPLOADED - NexGen Academy`;
+                message = `User: ${data.name}\nFile: ${data.fileName}\nSize: ${data.fileSize}\nTime: ${timestamp}`;
+            }
+
+            console.log('📧 NOTIFICATION TO:', ADMIN_EMAIL);
+            console.log('Subject:', subject);
+            console.log('Message:', message);
+
+            try {
+                await fetch('https://api.web3forms.com/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        access_key: WEB3FORMS_KEY,
+                        to: ADMIN_EMAIL,
+                        subject: subject,
+                        message: message
+                    })
+                });
+            } catch (e) {
+                console.log('Email service offline - logged to console');
+            }
+        }
+
+        // Update UI for logged in user
+        function updateUIForLoggedInUser() {
+            document.getElementById('authButtons').style.display = 'none';
+            document.getElementById('userProfileNav').style.display = 'flex';
+            
+            const avatarUrl = currentUser.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.avatarSeed || 'default'}`;
+            document.getElementById('navAvatar').src = avatarUrl;
+            document.getElementById('navUserName').textContent = currentUser.firstName;
+            document.getElementById('navUserLevel').textContent = currentUser.level || 1;
+        }
+
+        // Generate avatar options
+        function generateAvatarOptions() {
+            const container = document.getElementById('avatarOptions');
+            if (!container) return;
+            container.innerHTML = '';
+            avatarSeeds.forEach(seed => {
+                const div = document.createElement('div');
+                div.className = 'cursor-pointer p-2 rounded-lg border-2 border-transparent hover:border-cyan-500 transition';
+                div.onclick = () => selectAvatar(seed);
+                div.innerHTML = `<img src="https://api.dicebear.com/7.x/avataaars/svg?seed=${seed}" class="w-full rounded-full">`;
+                if (currentUser && currentUser.avatarSeed === seed && !currentUser.profilePicture) {
+                    div.classList.add('border-cyan-500');
+                }
+                container.appendChild(div);
+            });
+        }
+
+        // Select avatar
+        function selectAvatar(seed) {
+            if (currentUser) {
+                currentUser.avatarSeed = seed;
+                currentUser.profilePicture = null;
+                saveUserData();
+                updateUIForLoggedInUser();
+                updateProfileModal();
+                generateAvatarOptions();
+                showToast('Avatar updated!', 'success');
+            }
+        }
+
+        // Upload Profile Picture
+        async function uploadProfilePicture(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showToast('Please select an image file', 'error');
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('Image must be less than 5MB', 'error');
+                return;
+            }
+
+            showLoading('Uploading profile picture...');
+
+            // Convert to base64 for local storage
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const base64 = e.target.result;
+                
+                currentUser.profilePicture = base64;
+                saveUserData();
+                
+                updateUIForLoggedInUser();
+                updateProfileModal();
+                
+                hideLoading();
+                showToast('Profile picture updated!', 'success');
+
+                await sendNotification('file_upload', {
+                    name: currentUser.firstName + ' ' + currentUser.lastName,
+                    fileName: 'Profile Picture',
+                    fileSize: formatFileSize(file.size)
+                });
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Setup Drag and Drop
+        function setupDragAndDrop() {
+            const dropZone = document.getElementById('fileDropZone');
+            if (!dropZone) return;
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, preventDefaults);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'));
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'));
+            });
+
+            dropZone.addEventListener('drop', (e) => {
+                const files = e.dataTransfer.files;
+                handleFiles(files);
+            });
+        }
+
+        // Handle file upload
+        function uploadFiles(event) {
+            handleFiles(event.target.files);
+        }
+
+        async function handleFiles(files) {
+            if (!currentUser) {
+                showToast('Please login first', 'error');
+                return;
+            }
+
+            for (let file of files) {
+                if (file.size > 10 * 1024 * 1024) {
+                    showToast(`${file.name} is too large (max 10MB)`, 'error');
+                    continue;
+                }
+
+                // Show progress
+                document.getElementById('uploadProgress').classList.remove('hidden');
+                document.getElementById('uploadFileName').textContent = `Uploading: ${file.name}`;
+
+                // Simulate upload progress
+                let progress = 0;
+                const progressBar = document.getElementById('uploadProgressBar');
+                
+                const interval = setInterval(() => {
+                    progress += Math.random() * 30;
+                    if (progress > 100) progress = 100;
+                    progressBar.style.width = progress + '%';
+                }, 200);
+
+                // Convert to base64 for local storage
+                const reader = new FileReader();
+                reader.onload = async function(e) {
+                    clearInterval(interval);
+                    progressBar.style.width = '100%';
+
+                    const fileData = {
+                        id: Date.now().toString(),
+                        name: file.name,
+                        type: file.type,
+                        size: file.size,
+                        data: e.target.result,
+                        uploadedAt: new Date().toISOString()
+                    };
+
+                    userFiles.push(fileData);
+                    localStorage.setItem('nexgenUserFiles', JSON.stringify(userFiles));
+
+                    setTimeout(() => {
+                        document.getElementById('uploadProgress').classList.add('hidden');
+                        progressBar.style.width = '0%';
+                        renderFilesList();
+                        updateStorageUsage();
+                        showToast(`${file.name} uploaded successfully!`, 'success');
+                    }, 500);
+
+                    await sendNotification('file_upload', {
+                        name: currentUser.firstName + ' ' + currentUser.lastName,
+                        fileName: file.name,
+                        fileSize: formatFileSize(file.size)
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        // Render files list
+        function renderFilesList() {
+            const container = document.getElementById('filesList');
+            const countEl = document.getElementById('fileCount');
+
+            if (userFiles.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-8 text-gray-500">
+                        <i class="fas fa-folder-open text-4xl mb-3"></i>
+                        <p>No files uploaded yet</p>
+                    </div>
+                `;
+                countEl.textContent = '0 files';
+                return;
+            }
+
+            countEl.textContent = `${userFiles.length} file${userFiles.length > 1 ? 's' : ''}`;
+
+            container.innerHTML = userFiles.map(file => `
+                <div class="file-item flex items-center gap-4 p-3 rounded-lg border border-gray-800">
+                    <div class="w-12 h-12 hexagon bg-gradient-to-br ${getFileColor(file.type)} flex items-center justify-center flex-shrink-0">
+                        <i class="${getFileIcon(file.type)} text-white"></i>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-white font-medium truncate">${file.name}</p>
+                        <p class="text-gray-500 text-sm">${formatFileSize(file.size)} • ${formatDate(file.uploadedAt)}</p>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="downloadFile('${file.id}')" class="p-2 text-cyan-400 hover:bg-cyan-500/20 rounded-lg transition" title="Download">
+                            <i class="fas fa-download"></i>
+                        </button>
+                        <button onclick="deleteFile('${file.id}')" class="p-2 text-red-400 hover:bg-red-500/20 rounded-lg transition" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Download file
+        function downloadFile(fileId) {
+            const file = userFiles.find(f => f.id === fileId);
+            if (!file) return;
+
+            const link = document.createElement('a');
+            link.href = file.data;
+            link.download = file.name;
+            link.click();
+            showToast('Download started!', 'success');
+        }
+
+        // Delete file
+        function deleteFile(fileId) {
+            if (!confirm('Are you sure you want to delete this file?')) return;
+
+            userFiles = userFiles.filter(f => f.id !== fileId);
+            localStorage.setItem('nexgenUserFiles', JSON.stringify(userFiles));
+            renderFilesList();
+            updateStorageUsage();
+            showToast('File deleted!', 'success');
+        }
+
+        // Helper functions
+        function getFileIcon(type) {
+            if (type.startsWith('image/')) return 'fas fa-image';
+            if (type.startsWith('video/')) return 'fas fa-video';
+            if (type.includes('pdf')) return 'fas fa-file-pdf';
+            if (type.includes('word') || type.includes('document')) return 'fas fa-file-word';
+            if (type.includes('excel') || type.includes('sheet')) return 'fas fa-file-excel';
+            return 'fas fa-file';
+        }
+
+        function getFileColor(type) {
+            if (type.startsWith('image/')) return 'from-pink-500 to-purple-600';
+            if (type.startsWith('video/')) return 'from-red-500 to-orange-600';
+            if (type.includes('pdf')) return 'from-red-500 to-red-700';
+            if (type.includes('word')) return 'from-blue-500 to-blue-700';
+            if (type.includes('excel')) return 'from-green-500 to-green-700';
+            return 'from-gray-500 to-gray-700';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+        }
+
+        function formatDate(dateStr) {
+            return new Date(dateStr).toLocaleDateString();
+        }
+
+        function updateStorageUsage() {
+            const totalBytes = userFiles.reduce((sum, f) => sum + f.size, 0);
+            const usedMB = totalBytes / (1024 * 1024);
+            const percentage = Math.min((usedMB / 100) * 100, 100);
+
+            document.getElementById('storageUsed').textContent = usedMB.toFixed(1);
+            document.getElementById('storageBar').style.width = percentage + '%';
+        }
+
+        // Save user data
+        function saveUserData() {
+            localStorage.setItem('nexgenUser', JSON.stringify(currentUser));
+            if (firebaseEnabled && currentUser.uid) {
+                db.collection('users').doc(currentUser.uid).set(currentUser, { merge: true });
+            }
+        }
+
+        // Modal functions
+        function openRegisterModal() {
+            document.getElementById('registerModal').classList.remove('hidden');
+            document.getElementById('registerModal').classList.add('flex');
+        }
+        function closeRegisterModal() {
+            document.getElementById('registerModal').classList.add('hidden');
+            document.getElementById('registerModal').classList.remove('flex');
+        }
+
+        function openLoginModal() {
+            document.getElementById('loginModal').classList.remove('hidden');
+            document.getElementById('loginModal').classList.add('flex');
+        }
+        function closeLoginModal() {
+            document.getElementById('loginModal').classList.add('hidden');
+            document.getElementById('loginModal').classList.remove('flex');
+        }
+
+        function openProfileModal() {
+            if (!currentUser) {
+                openLoginModal();
+                return;
+            }
+            updateProfileModal();
+            document.getElementById('profileModal').classList.remove('hidden');
+            document.getElementById('profileModal').classList.add('flex');
+        }
+        function closeProfileModal() {
+            document.getElementById('profileModal').classList.add('hidden');
+            document.getElementById('profileModal').classList.remove('flex');
+        }
+
+        function openPaymentModal(name, amount) {
+            document.getElementById('paymentCourseName').textContent = name;
+            document.getElementById('paymentAmount').textContent = '$' + amount;
+            document.getElementById('paymentModal').classList.remove('hidden');
+            document.getElementById('paymentModal').classList.add('flex');
+        }
+        function closePaymentModal() {
+            document.getElementById('paymentModal').classList.add('hidden');
+            document.getElementById('paymentModal').classList.remove('flex');
+        }
+
+        function openSuccessModal() {
+            document.getElementById('successModal').classList.remove('hidden');
+            document.getElementById('successModal').classList.add('flex');
+        }
+        function closeSuccessModal() {
+            document.getElementById('successModal').classList.add('hidden');
+            document.getElementById('successModal').classList.remove('flex');
+        }
+
+        // Update profile modal
+        function updateProfileModal() {
+            if (!currentUser) return;
+
+            const avatarUrl = currentUser.profilePicture || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser.avatarSeed || 'default'}`;
+            document.getElementById('profileAvatar').src = avatarUrl;
+            document.getElementById('profileName').textContent = currentUser.firstName + ' ' + currentUser.lastName;
+            document.getElementById('profileEmail').textContent = currentUser.email;
+
+            document.getElementById('settingsFirstName').value = currentUser.firstName || '';
+            document.getElementById('settingsLastName').value = currentUser.lastName || '';
+            document.getElementById('settingsPhone').value = currentUser.phone || '';
+
+            userFiles = JSON.parse(localStorage.getItem('nexgenUserFiles')) || [];
+            renderFilesList();
+            updateStorageUsage();
+            updateEnrolledCourses();
+        }
+
+        // Switch profile tabs
+        function switchProfileTab(tabName) {
+            document.querySelectorAll('.profile-tab').forEach(tab => tab.classList.add('hidden'));
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'text-white');
+                btn.classList.add('text-gray-400');
+            });
+            
+            document.getElementById('tab-' + tabName).classList.remove('hidden');
+            document.querySelector(`.tab-btn[data-tab="${tabName}"]`).classList.add('active', 'text-white');
+        }
+
+        // Process registration
+        async function processRegistration(e) {
+            e.preventDefault();
+            const btn = document.getElementById('registerBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>CREATING ACCOUNT...';
+            btn.disabled = true;
+
+            const userData = {
+                uid: 'user_' + Date.now(),
+                firstName: document.getElementById('regFirstName').value,
+                lastName: document.getElementById('regLastName').value,
+                email: document.getElementById('regEmail').value,
+                phone: document.getElementById('regPhone').value,
+                interest: document.getElementById('regInterest').value,
+                avatarSeed: avatarSeeds[Math.floor(Math.random() * avatarSeeds.length)],
+                level: 1,
+                courses: [],
+                createdAt: new Date().toISOString()
+            };
+
+            await sendNotification('registration', {
+                name: userData.firstName + ' ' + userData.lastName,
+                email: userData.email,
+                phone: userData.phone,
+                interest: userData.interest
+            });
+
+            currentUser = userData;
+            saveUserData();
+
+            setTimeout(() => {
+                closeRegisterModal();
+                btn.innerHTML = '<i class="fas fa-user-plus"></i>CREATE FREE ACCOUNT';
+                btn.disabled = false;
+                updateUIForLoggedInUser();
+                
+                document.getElementById('successTitle').textContent = 'WELCOME TO NEXGEN!';
+                document.getElementById('successMessage').textContent = `Account created! You have 100MB FREE storage. Start uploading your files!`;
+                openSuccessModal();
+            }, 2000);
+        }
+
+        // Process login
+        async function processLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('loginBtn');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>LOGGING IN...';
+            btn.disabled = true;
+
+            const email = document.getElementById('loginEmail').value;
+            const savedUser = JSON.parse(localStorage.getItem('nexgenUser'));
+
+            setTimeout(async () => {
+                if (savedUser && savedUser.email === email) {
+                    currentUser = savedUser;
+                } else {
+                    currentUser = {
+                        uid: 'user_' + Date.now(),
+                        firstName: 'User',
+                        lastName: email.split('@')[0],
+                        email: email,
+                        avatarSeed: avatarSeeds[Math.floor(Math.random() * avatarSeeds.length)],
+                        level: 1,
+                        courses: [],
+                        createdAt: new Date().toISOString()
+                    };
+                    saveUserData();
+                }
+
+                await sendNotification('login', {
+                    name: currentUser.firstName + ' ' + currentUser.lastName,
+                    email: currentUser.email
+                });
+
+                closeLoginModal();
+                btn.innerHTML = '<i class="fas fa-sign-in-alt"></i>LOGIN';
+                btn.disabled = false;
+                updateUIForLoggedInUser();
+                showToast(`Welcome back, ${currentUser.firstName}!`, 'success');
+                
+                setTimeout(() => openProfileModal(), 500);
+            }, 1500);
+        }
+
+        // Logout
+        function logout() {
+            currentUser = null;
+            document.getElementById('authButtons').style.display = 'flex';
+            document.getElementById('userProfileNav').style.display = 'none';
+            showToast('Logged out successfully', 'success');
+        }
+
+        // Save settings
+        function saveSettings(e) {
+            e.preventDefault();
+            currentUser.firstName = document.getElementById('settingsFirstName').value;
+            currentUser.lastName = document.getElementById('settingsLastName').value;
+            currentUser.phone = document.getElementById('settingsPhone').value;
+            currentUser.country = document.getElementById('settingsCountry').value;
+            saveUserData();
+            updateUIForLoggedInUser();
+            updateProfileModal();
+            showToast('Settings saved!', 'success');
+        }
+
+        // Check login and enroll
+        function checkLoginAndEnroll(courseName) {
+            if (!currentUser) {
+                showToast('Please login first!', 'error');
+                openRegisterModal();
+                return;
+            }
+            if (!currentUser.courses) currentUser.courses = [];
+            if (!currentUser.courses.includes(courseName)) {
+                currentUser.courses.push(courseName);
+                saveUserData();
+            }
+            showToast(`Enrolled in ${courseName}!`, 'success');
+            openProfileModal();
+            switchProfileTab('courses');
+        }
+
+        // Update enrolled courses
+        function updateEnrolledCourses() {
+            const container = document.getElementById('enrolledCourses');
+            if (!currentUser || !currentUser.courses || currentUser.courses.length === 0) {
+                container.innerHTML = `
+                    <div class="glass rounded-xl p-6 text-center">
+                        <i class="fas fa-book-open text-4xl text-gray-600 mb-4"></i>
+                        <p class="text-gray-400">No courses enrolled yet.</p>
+                        <a href="#free-courses" onclick="closeProfileModal()" class="inline-block mt-4 text-green-400 hover:underline">Browse Free Courses</a>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = currentUser.courses.map(course => `
+                <div class="glass rounded-xl p-4 flex items-center gap-4">
+                    <div class="w-16 h-16 hexagon bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                        <i class="fas fa-book text-white text-xl"></i>
+                    </div>
+                    <div class="flex-1">
+                        <h4 class="font-bold text-white">${course}</h4>
+                        <div class="flex items-center gap-2 mt-1">
+                            <div class="flex-1 h-2 bg-gray-700 rounded-full overflow-hidden">
+                                <div class="h-full bg-green-500 rounded-full" style="width: ${Math.floor(Math.random() * 50) + 10}%"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="btn-cyber bg-cyan-500/20 text-cyan-400 px-4 py-2 rounded-lg font-bold">
+                        <i class="fas fa-play mr-1"></i>Continue
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        // Process payment
+        async function processPayment(e) {
+            e.preventDefault();
+            const btn = document.getElementById('payButton');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>PROCESSING...';
+            btn.disabled = true;
+
+            await sendNotification('payment', {
+                name: document.getElementById('payName').value,
+                email: document.getElementById('payEmail').value,
+                course: document.getElementById('paymentCourseName').textContent,
+                amount: document.getElementById('paymentAmount').textContent.replace('$', '')
+            });
+
+            setTimeout(() => {
+                closePaymentModal();
+                btn.innerHTML = '<i class="fas fa-lock"></i>PAY SECURELY';
+                btn.disabled = false;
+                document.getElementById('successTitle').textContent = 'PAYMENT SUCCESSFUL!';
+                document.getElementById('successMessage').textContent = 'Thank you! Your account has been upgraded.';
+                openSuccessModal();
+            }, 2500);
+        }
+
+        // Calculator
+        let calcValue = '0';
+        function appendCalc(v) {
+            calcValue = calcValue === '0' && v !== '.' ? v : calcValue + v;
+            document.getElementById('calcDisplay').value = calcValue;
+        }
+        function clearCalc() {
+            calcValue = '0';
+            document.getElementById('calcDisplay').value = '0';
+        }
+        function calculate() {
+            try {
+                const result = eval(calcValue);
+                document.getElementById('calcDisplay').value = result;
+                calcValue = result.toString();
+            } catch { 
+                document.getElementById('calcDisplay').value = 'Error'; 
+                calcValue = '0'; 
+            }
+        }
+
+        // Code Editor
+        function runCode() {
+            const code = document.getElementById('codeEditor').value;
+            const output = document.getElementById('codeOutput');
+            output.textContent = '';
+            const logs = [];
+            const origLog = console.log;
+            console.log = (...args) => logs.push(args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' '));
+            try {
+                const result = eval(code);
+                output.textContent = logs.length ? logs.join('\n') : (result !== undefined ? String(result) : 'Code executed!');
+                output.className = 'text-green-400 font-mono text-sm min-h-[60px]';
+            } catch(e) {
+                output.textContent = 'Error: ' + e.message;
+                output.className = 'text-red-400 font-mono text-sm min-h-[60px]';
+            }
+            console.log = origLog;
+        }
+
+        // Card number formatting
+        document.getElementById('cardNumber')?.addEventListener('input', function(e) {
+            let v = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+            e.target.value = v.match(/.{1,4}/g)?.join(' ') || v;
+        });
+        document.getElementById('cardExpiry')?.addEventListener('input', function(e) {
+            let v = e.target.value.replace(/\D/g, '');
+            if (v.length >= 2) v = v.slice(0,2) + '/' + v.slice(2);
+            e.target.value = v;
+        });
+
+        // Mobile menu
+        document.getElementById('mobileMenuBtn')?.addEventListener('click', () => {
+            showToast('Use desktop for full experience', 'info');
+        });
+
+        // Close modals on outside click
+        ['registerModal', 'loginModal', 'profileModal', 'paymentModal', 'successModal'].forEach(id => {
+            document.getElementById(id)?.addEventListener('click', e => {
+                if (e.target.id === id) {
+                    e.target.classList.add('hidden');
+                    e.target.classList.remove('flex');
+                }
+            });
+        });
+    </script>
+</body>
+</html>
